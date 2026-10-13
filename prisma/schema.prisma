@@ -1,0 +1,560 @@
+// This is the production-ready Prisma schema for TuniEdu (Tunisian Education Platform)
+// Conforming to Version 1.0 specifications
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  PARENT
+  PROFESSOR
+  REVIEWER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum ProfessorStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum BookStatus {
+  DRAFT
+  PROCESSING
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum ProcessingStatus {
+  QUEUED
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  PARTIALLY_REFUNDED
+  REFUNDED
+  FAILED
+  CANCELLED
+  DISPUTED
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+  DISPUTED
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum ParentLinkStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum ExerciseType {
+  MULTIPLE_CHOICE
+  NUMERIC
+  SHORT_TEXT
+  LONG_TEXT
+  FILE_UPLOAD
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  PAID
+  FAILED
+  ON_HOLD
+}
+
+enum LedgerEntryType {
+  SALE
+  PLATFORM_COMMISSION
+  PAYMENT_FEE
+  REFUND
+  COMMISSION_REVERSAL
+  PAYOUT
+  PAYOUT_REVERSAL
+  ADJUSTMENT
+}
+
+model User {
+  id              String        @id @default(cuid())
+  name            String
+  email           String?       @unique
+  phone           String?       @unique
+  passwordHash    String?
+  status          AccountStatus @default(PENDING)
+  locale          String        @default("fr")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  roles           UserRoleAssignment[]
+  professor       ProfessorProfile?
+  publishedBooks  Book[]        @relation("BookAuthor")
+  purchases       Purchase[]
+  entitlements    Entitlement[]
+  parentLinks     ParentChildLink[] @relation("ParentLinks")
+  childLinks      ParentChildLink[] @relation("ChildLinks")
+  studySessions   StudySession[]
+  attempts        ExerciseAttempt[]
+  auditEvents     AuditLog[]    @relation("AuditActor")
+  reviews         BookReview[]  @relation("ReviewAuthor")
+  notifications   Notification[]
+}
+
+model UserRoleAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  role      UserRole
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, role])
+  @@index([role])
+}
+
+model ProfessorProfile {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  displayName        String
+  biography          String?
+  status             ProfessorStatus @default(PENDING)
+  verifiedAt         DateTime?
+  payoutReference    String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  user               User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  books              Book[]
+  payouts            ProfessorPayout[]
+  ledgerEntries      FinancialLedgerEntry[]
+}
+
+model EducationLevel {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  nameFr      String
+  nameAr      String?
+  stage       String
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  books       Book[]
+
+  @@index([stage, sortOrder])
+}
+
+model Subject {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  nameFr      String
+  nameAr      String?
+  isActive    Boolean  @default(true)
+
+  books       Book[]
+}
+
+model AcademicYear {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  startsAt    DateTime
+  endsAt      DateTime
+  timezone    String   @default("Africa/Tunis")
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  entitlements Entitlement[]
+
+  @@index([isActive])
+}
+
+model Book {
+  id                 String     @id @default(cuid())
+  professorId        String
+  educationLevelId   String
+  subjectId          String
+  title              String
+  slug               String     @unique
+  description        String?
+  language           String     @default("fr")
+  currency           String     @default("TND")
+  priceMillimes      Int
+  status             BookStatus @default(DRAFT)
+  coverObjectKey     String?
+  currentVersionId   String?    @unique
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  publishedAt        DateTime?
+  archivedAt         DateTime?
+
+  professor          ProfessorProfile @relation(fields: [professorId], references: [id], onDelete: Restrict)
+  educationLevel     EducationLevel @relation(fields: [educationLevelId], references: [id], onDelete: Restrict)
+  subject            Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  versions           BookVersion[] @relation("BookVersions")
+  currentVersion     BookVersion? @relation("CurrentBookVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  chapters           BookChapter[]
+  purchaseItems      PurchaseItem[]
+  entitlements       Entitlement[]
+  reviews            BookReview[]
+  studySessions      StudySession[]
+
+  @@index([status, educationLevelId, subjectId])
+  @@index([professorId, status])
+  @@index([publishedAt])
+}
+
+model BookVersion {
+  id                 String           @id @default(cuid())
+  bookId             String
+  versionNumber      Int
+  processingStatus   ProcessingStatus @default(QUEUED)
+  originalObjectKey  String
+  checksumSha256     String?
+  pageCount          Int?
+  processingError    String?
+  createdAt          DateTime         @default(now())
+  readyAt            DateTime?
+
+  book               Book             @relation("BookVersions", fields: [bookId], references: [id], onDelete: Restrict)
+  currentFor         Book?            @relation("CurrentBookVersion")
+  pages              BookPage[]
+  chapters           BookChapter[]
+
+  @@unique([bookId, versionNumber])
+  @@index([bookId, processingStatus])
+}
+
+model BookPage {
+  id             String   @id @default(cuid())
+  versionId      String
+  pageNumber     Int
+  objectKey      String
+  width          Int?
+  height         Int?
+  checksumSha256 String?
+
+  version        BookVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  @@unique([versionId, pageNumber])
+  @@index([versionId])
+}
+
+model BookChapter {
+  id             String   @id @default(cuid())
+  bookId         String
+  versionId      String
+  title          String
+  sortOrder      Int
+  startPage      Int
+  endPage        Int
+
+  book           Book        @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  version        BookVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  exercises      Exercise[]
+
+  @@unique([versionId, sortOrder])
+  @@index([bookId, sortOrder])
+}
+
+model Exercise {
+  id             String       @id @default(cuid())
+  chapterId      String
+  type           ExerciseType
+  prompt         Json
+  options        Json?
+  answerKey      Json?
+  solution       Json?
+  difficulty     Int          @default(1)
+  points         Int          @default(1)
+  sortOrder      Int
+  isPublished    Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  chapter        BookChapter @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  attempts       ExerciseAttempt[]
+
+  @@index([chapterId, sortOrder])
+}
+
+model Purchase {
+  id                String        @id @default(cuid())
+  userId            String
+  status            PurchaseStatus @default(PENDING)
+  currency          String        @default("TND")
+  subtotalMillimes  Int
+  discountMillimes  Int           @default(0)
+  totalMillimes     Int
+  idempotencyKey    String        @unique
+  createdAt         DateTime      @default(now())
+  paidAt            DateTime?
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items             PurchaseItem[]
+  payments          Payment[]
+  ledgerEntries     FinancialLedgerEntry[]
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model PurchaseItem {
+  id                String   @id @default(cuid())
+  purchaseId        String
+  bookId            String
+  bookTitleSnapshot String
+  bookVersionId     String?
+  unitPriceMillimes Int
+  quantity          Int      @default(1)
+  lineTotalMillimes Int
+  commissionBps     Int
+  createdAt         DateTime @default(now())
+
+  purchase          Purchase @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  book              Book     @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  entitlement       Entitlement?
+
+  @@unique([purchaseId, bookId])
+  @@index([bookId, createdAt])
+}
+
+model Payment {
+  id                   String       @id @default(cuid())
+  purchaseId           String
+  provider             String
+  providerReference    String?
+  providerEventReference String?
+  status               PaymentStatus @default(CREATED)
+  amountMillimes       Int
+  currency             String       @default("TND")
+  checkoutUrl          String?
+  idempotencyKey       String       @unique
+  failureCode          String?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  confirmedAt          DateTime?
+
+  purchase             Purchase     @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  events               PaymentEvent[]
+
+  @@unique([provider, providerReference])
+  @@index([purchaseId, status])
+}
+
+model PaymentEvent {
+  id                   String   @id @default(cuid())
+  paymentId            String
+  providerEventId      String
+  eventType            String
+  payloadHash          String
+  receivedAt           DateTime @default(now())
+  processedAt          DateTime?
+  processingError      String?
+
+  payment              Payment  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@unique([paymentId, providerEventId])
+  @@index([processedAt, receivedAt])
+}
+
+model Entitlement {
+  id                String            @id @default(cuid())
+  userId            String
+  bookId            String
+  purchaseItemId    String            @unique
+  academicYearId    String
+  status            EntitlementStatus @default(ACTIVE)
+  startsAt          DateTime
+  expiresAt         DateTime
+  grantedAt         DateTime          @default(now())
+  revokedAt         DateTime?
+  revokeReason      String?
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  book              Book              @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  purchaseItem      PurchaseItem      @relation(fields: [purchaseItemId], references: [id], onDelete: Restrict)
+  academicYear      AcademicYear      @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, bookId, academicYearId])
+  @@index([userId, status, expiresAt])
+  @@index([bookId, status])
+}
+
+model ParentChildLink {
+  id                 String           @id @default(cuid())
+  parentId           String
+  childId            String
+  status             ParentLinkStatus @default(PENDING)
+  invitationHash     String?          @unique
+  expiresAt          DateTime?
+  approvedAt         DateTime?
+  revokedAt          DateTime?
+  createdAt          DateTime         @default(now())
+
+  parent             User             @relation("ParentLinks", fields: [parentId], references: [id], onDelete: Restrict)
+  child              User             @relation("ChildLinks", fields: [childId], references: [id], onDelete: Restrict)
+
+  @@unique([parentId, childId])
+  @@index([childId, status])
+}
+
+model StudySession {
+  id                 String   @id @default(cuid())
+  userId             String
+  bookId             String
+  startedAt          DateTime @default(now())
+  lastActivityAt     DateTime @default(now())
+  endedAt            DateTime?
+  activeSeconds      Int      @default(0)
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  book               Book     @relation(fields: [bookId], references: [id], onDelete: Restrict)
+
+  @@index([userId, startedAt])
+  @@index([bookId, startedAt])
+}
+
+model ExerciseAttempt {
+  id                 String        @id @default(cuid())
+  userId             String
+  exerciseId         String
+  status             AttemptStatus @default(IN_PROGRESS)
+  answer             Json?
+  score              Decimal?      @db.Decimal(7, 2)
+  maxScore           Decimal       @default(1) @db.Decimal(7, 2)
+  startedAt          DateTime      @default(now())
+  submittedAt        DateTime?
+  gradedAt           DateTime?
+
+  user               User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  exercise           Exercise      @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  @@index([userId, submittedAt])
+  @@index([exerciseId, status])
+}
+
+model BookReview {
+  id                 String       @id @default(cuid())
+  bookId             String
+  reviewerId         String
+  status             ReviewStatus @default(PENDING)
+  notes              String?
+  createdAt          DateTime     @default(now())
+  reviewedAt         DateTime?
+
+  book               Book         @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  reviewer           User         @relation("ReviewAuthor", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([bookId, status])
+}
+
+model FinancialLedgerEntry {
+  id                 String           @id @default(cuid())
+  professorId        String
+  purchaseId         String?
+  type               LedgerEntryType
+  amountMillimes     Int
+  currency           String           @default("TND")
+  reference          String           @unique
+  description        String?
+  createdAt          DateTime         @default(now())
+
+  professor          ProfessorProfile @relation(fields: [professorId], references: [id], onDelete: Restrict)
+  purchase           Purchase?        @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+
+  @@index([professorId, createdAt])
+  @@index([purchaseId])
+}
+
+model ProfessorPayout {
+  id                 String       @id @default(cuid())
+  professorId        String
+  amountMillimes     Int
+  currency           String       @default("TND")
+  status             PayoutStatus @default(PENDING)
+  providerReference  String?
+  periodStart        DateTime
+  periodEnd          DateTime
+  requestedAt        DateTime     @default(now())
+  processedAt        DateTime?
+
+  professor          ProfessorProfile @relation(fields: [professorId], references: [id], onDelete: Restrict)
+
+  @@index([professorId, status, requestedAt])
+}
+
+model Notification {
+  id                 String   @id @default(cuid())
+  userId             String
+  type               String
+  title              String
+  body               String
+  readAt             DateTime?
+  createdAt          DateTime @default(now())
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, readAt, createdAt])
+}
+
+model AuditLog {
+  id                 String   @id @default(cuid())
+  actorId            String?
+  action             String
+  resourceType       String
+  resourceId         String?
+  requestId          String?
+  metadata           Json?
+  createdAt          DateTime @default(now())
+
+  actor              User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([resourceType, resourceId, createdAt])
+}

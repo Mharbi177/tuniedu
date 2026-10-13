@@ -1,0 +1,27 @@
+{
+  "name": "tuniedu-monorepo",
+  "version": "1.0.0",
+  "description": "Tunisian Education Platform - Mobile-first educational marketplace for primary, collège and beyond",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "start": "npm run start --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:seed": "npx tsx prisma/seed.ts",
+    "test:security": "npx tsx tests/security/runner.ts"
+  },
+  "devDependencies": {
+    "prisma": "^5.14.0",
+    "@prisma/client": "^5.14.0",
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
+  }
+}
