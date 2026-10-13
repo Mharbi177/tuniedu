@@ -56,11 +56,11 @@ tuniedu/
 │       │   ├── checkout/                   # Simulateur de passerelle bancaire nationale (Flouci / Carte)
 │       │   └── api/                        # Route Handlers sécurisés & livraison des planches
 │       ├── components/
-│       │   ├── catalogue/                  # LevelSelector, SubjectFilter, BookCard
-│       │   ├── reader/                     # SecureBookReader, DynamicWatermark, ChapterOutline
-│       │   ├── exercises/                  # ExerciseRenderer, CorrectionPanel
-│       │   ├── professor/                  # SalesLedgerTable, SecureUploadModal
-│       │   ├── parent/                     # WeeklyProgressCard
+│       │   ├── catalogue/                  # LevelSelector, SubjectFilter, BookCard, BookPreviewModal
+│       │   ├── reader/                     # SecureBookReader (3 Thèmes, Zoom, Miniatures), DynamicWatermark
+│       │   ├── exercises/                  # ExerciseRenderer (Corrigé 3 Étapes, Indices, Séries)
+│       │   ├── professor/                  # SalesLedgerTable, SecureUploadModal (%PDF-), PayoutRIBModal
+│       │   ├── parent/                     # WeeklyProgressCard (Graphique Heures, Maîtrise Matières)
 │       │   ├── admin/                      # AcademicYearEditor
 │       │   └── ui/                         # Navbar, MobileBottomNav, Icons
 │       └── lib/
@@ -91,6 +91,11 @@ tuniedu/
 * Node.js >= 20.x
 * npm >= 10.x
 
+### Configuration & Variables d'Environnement
+```bash
+cp .env.example .env
+```
+
 ### Installation
 ```bash
 npm install
@@ -100,7 +105,7 @@ npm install
 ```bash
 npm run test:security
 ```
-Validation automatisée de la matrice complète :
+Validation automatisée de la matrice complète (exécutée également en intégration continue via `.github/workflows/ci.yml`) :
 * Anti-falsification du prix client (SEC-04).
 * Rejet des webhooks sans signature cryptographique valide (SEC-07).
 * Révocation automatique dès l'échéance de l'année scolaire (SEC-12).
