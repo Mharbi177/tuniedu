@@ -101,17 +101,17 @@ export function runSecurityAcceptanceTests(): TestResult[] {
     details: 'Tampered signature rejected; valid provider signature accepted',
   });
 
-  // SEC-08: Currency stored as integer Millimes & strict 10% platform fee calculation
+  // SEC-08: Currency stored as integer Millimes & strict 20% platform fee calculation
   const samplePriceMillimes = 25000;
-  const platformFeeMillimes = Math.round((samplePriceMillimes * 1000) / 10000);
+  const platformFeeMillimes = Math.round((samplePriceMillimes * 2000) / 10000);
   const professorNetMillimes = samplePriceMillimes - platformFeeMillimes;
   const isMillimesInteger = Number.isInteger(platformFeeMillimes) && Number.isInteger(professorNetMillimes);
-  const isExactTenPercent = platformFeeMillimes === 2500 && professorNetMillimes === 22500;
+  const isExactTwentyPercent = platformFeeMillimes === 5000 && professorNetMillimes === 20000;
   results.push({
     id: 'SEC-08',
-    name: 'Currency stored as integer Millimes with 10% platform commission',
-    passed: isMillimesInteger && isExactTenPercent,
-    details: `Exact split verified: 25000 millimes -> ${platformFeeMillimes} mil (10% platform) + ${professorNetMillimes} mil (90% author)`,
+    name: 'Currency stored as integer Millimes with 20% platform commission',
+    passed: isMillimesInteger && isExactTwentyPercent,
+    details: `Exact split verified: 25000 millimes -> ${platformFeeMillimes} mil (20% platform) + ${professorNetMillimes} mil (80% author)`,
   });
 
   // SEC-09: Professor accesses another professor's draft -> Denied

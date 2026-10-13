@@ -63,15 +63,15 @@ function GatewaySimulationContent() {
           <span className="font-mono font-bold text-blue-700 text-sm">{formatDT(amount)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-500">Commission Plateforme (10%) :</span>
+          <span className="text-slate-500">Commission Plateforme (20%) :</span>
           <span className="font-mono text-slate-500">
-            {((parseInt(amount, 10) * 0.10) / 1000).toFixed(3)} DT (1000 bps)
+            {((parseInt(amount, 10) * 0.20) / 1000).toFixed(3)} DT (2000 bps)
           </span>
         </div>
         <div className="flex justify-between border-t border-blue-100 pt-1.5">
-          <span className="text-slate-600 font-medium">Revenu Net Enseignant (90%) :</span>
+          <span className="text-slate-600 font-medium">Revenu Net Enseignant (80%) :</span>
           <span className="font-mono font-bold text-blue-900">
-            {((parseInt(amount, 10) * 0.90) / 1000).toFixed(3)} DT
+            {((parseInt(amount, 10) * 0.80) / 1000).toFixed(3)} DT
           </span>
         </div>
       </div>

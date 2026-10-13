@@ -39,7 +39,7 @@ export const PERSONAS: UserPersona[] = [
     roleLabel: 'Professeur Agréé',
     badgeColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20',
     avatar: '👨‍🏫',
-    details: 'Statut: VÉRIFIÉ · Commission: 10% (1000 bps) · Auteur de 3 manuels',
+    details: 'Statut: VÉRIFIÉ · Commission: 20% (2000 bps) · Auteur de 3 manuels',
   },
   {
     id: 'user_admin_1',

@@ -25,8 +25,8 @@ export default function InscriptionPage() {
     if (accountType === 'PROFESSOR' && !acceptedCommissionTerms) {
       setErrorMessage(
         lang === 'ar'
-          ? 'يجب الموافقة على شروط المنصة وعمولة الـ 10% على مبيعات الكتب لإتمام التسجيل كأستاذ مؤلف.'
-          : 'Vous devez accepter les conditions générales et la commission de 10% sur les livres pour finaliser votre inscription enseignant.'
+          ? 'يجب الموافقة على شروط المنصة وعمولة الـ 20% على مبيعات الكتب لإتمام التسجيل كأستاذ مؤلف.'
+          : 'Vous devez accepter les conditions générales et la commission de 20% sur les livres pour finaliser votre inscription enseignant.'
       );
       return;
     }
@@ -216,7 +216,7 @@ export default function InscriptionPage() {
             </div>
           )}
 
-          {/* PROFESSOR SPECIFIC: Mandatory Acceptance of 10% Platform Terms on Books */}
+          {/* PROFESSOR SPECIFIC: Mandatory Acceptance of 20% Platform Terms on Books */}
           {accountType === 'PROFESSOR' && (
             <div className="p-4 bg-slate-50 border border-blue-200/70 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
@@ -224,20 +224,20 @@ export default function InscriptionPage() {
                   <Icons.CreditCard className="w-4 h-4 text-blue-700" />
                   <span>
                     {lang === 'ar'
-                      ? 'ميثاق النشر وعمولة المنصة (10% على كل كتاب) :'
-                      : 'Conditions d\'Édition & Commission Plateforme (10%) :'}
+                      ? 'ميثاق النشر وعمولة المنصة (20% على كل كتاب) :'
+                      : 'Conditions d\'Édition & Commission Plateforme (20%) :'}
                   </span>
                 </div>
                 <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                  10% (1000 bps)
+                  20% (2000 bps)
                 </span>
               </div>
 
               <div className="p-3 bg-white rounded-lg border border-slate-200 text-[11px] text-slate-600 leading-relaxed space-y-1.5">
                 <p>
                   {lang === 'ar'
-                    ? 'تنص الشروط التعاقدية لمنصة TuniEdu على اقتطاع عمولة بنسبة 10% من سعر بيع كل كتاب لتغطية استضافة الخوادم المشفرة، حماية الملكية الفكرية، البصمة المائية الرقمية، ورسوم معالجة الدفع الإلكتروني. ويتم صرف 90% كعائدات صافية للمؤلف شهرياً عبر تحويل بنكي.'
-                    : 'Les conditions contractuelles de TuniEdu fixent la commission plateforme à 10% (1000 bps) sur le prix de vente de chaque manuel. 90% des recettes nettes sont versées mensuellement par virement bancaire sur votre compte bancaire (RIB).'}
+                    ? 'تنص الشروط التعاقدية لمنصة TuniEdu على اقتطاع عمولة بنسبة 20% من سعر بيع كل كتاب لتغطية استضافة الخوادم المشفرة، حماية الملكية الفكرية، البصمة المائية الرقمية، ورسوم معالجة الدفع الإلكتروني. ويتم صرف 80% كعائدات صافية للمؤلف شهرياً عبر تحويل بنكي.'
+                    : 'Les conditions contractuelles de TuniEdu fixent la commission plateforme à 20% (2000 bps) sur le prix de vente de chaque manuel. 80% des recettes nettes sont versées mensuellement par virement bancaire sur votre compte bancaire (RIB).'}
                 </p>
               </div>
 
@@ -250,8 +250,8 @@ export default function InscriptionPage() {
                 />
                 <span className="text-[11px] text-slate-900 font-semibold leading-tight">
                   {lang === 'ar'
-                    ? 'أوافق بصفتي أستاذاً مؤلفاً على شروط المنصة وعمولة الـ 10% على مبيعات كتبي.'
-                    : 'J\'accepte expressément les conditions de la plateforme et la commission de 10% sur les ventes de mes manuels.'}
+                    ? 'أوافق بصفتي أستاذاً مؤلفاً على شروط المنصة وعمولة الـ 20% على مبيعات كتبي.'
+                    : 'J\'accepte expressément les conditions de la plateforme et la commission de 20% sur les ventes de mes manuels.'}
                 </span>
               </label>
             </div>

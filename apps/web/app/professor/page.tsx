@@ -69,8 +69,8 @@ export default function ProfessorStudioPage() {
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             {lang === 'ar'
-              ? 'إدارة المؤلفات المنشورة، مراجعة الألواح الرقمية، ومتابعة العائدات الصافية (عمولة المنصة 10%).'
-              : 'Gérez vos publications, prévisualisez les planches numérisées et suivez vos revenus nets (commission plateforme 10%).'}
+              ? 'إدارة المؤلفات المنشورة، مراجعة الألواح الرقمية، ومتابعة العائدات الصافية (عمولة المنصة 20%).'
+              : 'Gérez vos publications, prévisualisez les planches numérisées et suivez vos revenus nets (commission plateforme 20%).'}
           </p>
         </div>
 
@@ -107,8 +107,8 @@ export default function ProfessorStudioPage() {
 
         <div className="bg-white p-6 rounded-3xl border border-blue-100 shadow-xs space-y-2">
           <div className="text-xs text-slate-500 font-medium flex items-center justify-between">
-            <span>{lang === 'ar' ? 'عمولة منصة TuniEdu (10%)' : 'Frais Plateforme (10%)'}</span>
-            <span className="text-[10px] bg-blue-50 text-blue-800 font-bold px-1.5 py-0.5 rounded border border-blue-200">1000 bps</span>
+            <span>{lang === 'ar' ? 'عمولة منصة TuniEdu (20%)' : 'Frais Plateforme (20%)'}</span>
+            <span className="text-[10px] bg-blue-50 text-blue-800 font-bold px-1.5 py-0.5 rounded border border-blue-200">2000 bps</span>
           </div>
           <div className="text-2xl font-bold font-mono text-slate-600">
             -{(totalCommissionsMillimes / 1000).toFixed(3)}{' '}
@@ -122,7 +122,7 @@ export default function ProfessorStudioPage() {
         <div className="bg-[#0F2942] text-white p-6 rounded-3xl border border-[#0A1C2E] shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div className="text-xs text-blue-200 font-medium">
-              {lang === 'ar' ? 'المستحقات الصافية للمؤلف (90%)' : 'Rémunération Nette Auteur (90%)'}
+              {lang === 'ar' ? 'المستحقات الصافية للمؤلف (80%)' : 'Rémunération Nette Auteur (80%)'}
             </div>
             <div className="text-3xl font-bold font-mono text-white mt-1">
               {(netEarningsMillimes / 1000).toFixed(3)}{' '}
@@ -192,18 +192,18 @@ export default function ProfessorStudioPage() {
         </div>
       </div>
 
-      {/* Financial Ledger & 10% Platform Commission Section */}
+      {/* Financial Ledger & 20% Platform Commission Section */}
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-bold text-slate-950 font-serif">
             {lang === 'ar'
-              ? 'التقرير المالي وحقوق التأليف (عمولة المنصة 10% · المستحقات الصافية 90%)'
-              : 'Comptabilité & Rémunération des Ventes (Commission 10% · Rémunération Nette 90%)'}
+              ? 'التقرير المالي وحقوق التأليف (عمولة المنصة 20% · المستحقات الصافية 80%)'
+              : 'Comptabilité & Rémunération des Ventes (Commission 20% · Rémunération Nette 80%)'}
           </h2>
           <p className="text-xs text-slate-500">
             {lang === 'ar'
-              ? 'مطابق لميثاق الشفافية المالية لمنصة TuniEdu — اقتطاع 10% لتغطية الخوادم المشفرة ومعالجة الدفع، وصرف 90% للأستاذ.'
-              : 'Conforme au principe de transparence contractuelle — 10% de frais d\'infrastructure et passerelle de paiement, 90% reversés à l\'enseignant.'}
+              ? 'مطابق لميثاق الشفافية المالية لمنصة TuniEdu — اقتطاع 20% لتغطية الخوادم المشفرة ومعالجة الدفع، وصرف 80% للأستاذ.'
+              : 'Conforme au principe de transparence contractuelle — 20% de frais d\'infrastructure et passerelle de paiement, 80% reversés à l\'enseignant.'}
           </p>
         </div>
 

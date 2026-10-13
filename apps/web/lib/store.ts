@@ -104,7 +104,7 @@ export interface PurchaseItem {
   bookId: string;
   bookTitleSnapshot: string;
   unitPriceMillimes: number;
-  commissionBps: number; // 1000 = 10%
+  commissionBps: number; // 2000 = 20%
 }
 
 export interface FinancialLedgerEntry {
@@ -467,10 +467,10 @@ const INITIAL_LEDGER: FinancialLedgerEntry[] = [
     id: 'led_2',
     professorId: 'prof_profile_1',
     type: 'PLATFORM_COMMISSION',
-    amountMillimes: 2200, // 10% of 22000 = 2200 millimes
+    amountMillimes: 4400, // 20% of 22000 = 4400 millimes
     currency: 'TND',
     reference: 'COMM-2026-0001',
-    description: 'Commission TuniEdu (1000 bps = 10%)',
+    description: 'Commission TuniEdu (2000 bps = 20%)',
     createdAt: '2026-09-16T09:00:00Z',
   },
 ];
@@ -569,7 +569,7 @@ class TuniEduStore {
       bookId: b.id,
       bookTitleSnapshot: b.title,
       unitPriceMillimes: b.priceMillimes,
-      commissionBps: 1000, // 10%
+      commissionBps: 2000, // 20%
     }));
 
     const newPurchase: Purchase = {
@@ -625,8 +625,8 @@ class TuniEduStore {
         createdAt: nowIso,
       });
 
-      // Financial Ledger: 10% Platform Commission
-      const commissionMillimes = Math.round((book.priceMillimes * 1000) / 10000);
+      // Financial Ledger: 20% Platform Commission
+      const commissionMillimes = Math.round((book.priceMillimes * 2000) / 10000);
       this.ledger.push({
         id: `led_comm_${Date.now()}_${i}`,
         professorId: book.professorId,
@@ -635,7 +635,7 @@ class TuniEduStore {
         amountMillimes: commissionMillimes,
         currency: 'TND',
         reference: `COMM-${newPurchase.id}-${i + 1}`,
-        description: `Commission plateforme (10%) pour ${book.title}`,
+        description: `Commission plateforme (20%) pour ${book.title}`,
         createdAt: nowIso,
       });
     }

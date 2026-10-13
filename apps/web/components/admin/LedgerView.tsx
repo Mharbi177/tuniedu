@@ -95,7 +95,7 @@ export function LedgerView() {
             {lang === 'ar' ? 'المطابقة المالية والمحاسبية الوطنية' : 'Comptabilité & Grand Livre Plateforme'}
           </div>
           <h2 className="text-lg font-bold text-slate-950 font-serif">
-            {lang === 'ar' ? 'سجل العمليات والعمولات (10% منصة / 90% مؤلف)' : 'Grand Livre des Transactions & Commissions (10% / 90%)'}
+            {lang === 'ar' ? 'سجل العمليات والعمولات (20% منصة / 80% مؤلف)' : 'Grand Livre des Transactions & Commissions (20% / 80%)'}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             {lang === 'ar'
@@ -145,11 +145,11 @@ export function LedgerView() {
           </div>
         </div>
 
-        {/* Platform 10% Commission */}
+        {/* Platform 20% Commission */}
         <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-1">
           <div className="text-[10px] text-blue-900 uppercase font-semibold flex items-center justify-between">
-            <span>{lang === 'ar' ? 'عمولة المنصة (10%)' : 'Commission TuniEdu (10%)'}</span>
-            <span className="text-[9px] bg-blue-700 text-white px-1.5 py-0.5 rounded font-mono">1000 bps</span>
+            <span>{lang === 'ar' ? 'عمولة المنصة (20%)' : 'Commission TuniEdu (20%)'}</span>
+            <span className="text-[9px] bg-blue-700 text-white px-1.5 py-0.5 rounded font-mono">2000 bps</span>
           </div>
           <div className="text-2xl font-bold text-blue-950 font-serif">
             {formatDT(totalCommissionMillimes)}
@@ -159,11 +159,11 @@ export function LedgerView() {
           </div>
         </div>
 
-        {/* Total Author Royalties (90%) */}
+        {/* Total Author Royalties (80%) */}
         <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
           <div className="text-[10px] text-slate-600 uppercase font-semibold flex items-center justify-between">
-            <span>{lang === 'ar' ? 'مستحقات المؤلفين (90%)' : 'Redevances Auteurs (90%)'}</span>
-            <span className="text-[9px] bg-slate-700 text-white px-1.5 py-0.5 rounded font-mono">9000 bps</span>
+            <span>{lang === 'ar' ? 'مستحقات المؤلفين (80%)' : 'Redevances Auteurs (80%)'}</span>
+            <span className="text-[9px] bg-slate-700 text-white px-1.5 py-0.5 rounded font-mono">8000 bps</span>
           </div>
           <div className="text-2xl font-bold text-slate-900 font-serif">
             {formatDT(totalAuthorRoyaltiesMillimes)}
@@ -218,7 +218,7 @@ export function LedgerView() {
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
-            {lang === 'ar' ? 'العمولات (10%)' : 'Commissions 10%'}
+            {lang === 'ar' ? 'العمولات (20%)' : 'Commissions 20%'}
           </button>
           <button
             onClick={() => setFilterType('PAYOUT')}
@@ -290,7 +290,7 @@ export function LedgerView() {
                       )}
                       {isComm && (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                          {lang === 'ar' ? 'عمولة 10%' : 'COMMISSION 10%'}
+                          {lang === 'ar' ? 'عمولة 20%' : 'COMMISSION 20%'}
                         </span>
                       )}
                       {isPayout && (

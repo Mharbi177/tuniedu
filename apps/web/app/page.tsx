@@ -232,12 +232,12 @@ export default function HomePage() {
             <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-2">
               <div className="font-bold text-blue-950 text-sm flex items-center gap-2">
                 <Icons.CreditCard className="w-4 h-4 text-blue-700" />
-                <span>{lang === 'ar' ? 'نموذج مالي شفاف (90% للمؤلف)' : 'Transparence Financière (90% Auteur)'}</span>
+                <span>{lang === 'ar' ? 'نموذج مالي شفاف (80% للمؤلف)' : 'Transparence Financière (80% Auteur)'}</span>
               </div>
               <p className="text-slate-600 leading-relaxed text-[11px]">
                 {lang === 'ar'
-                  ? 'عمولة المنصة محددة بنسبة 10% لتغطية تكاليف الخوادم ومعالجة الدفع، مع صرف 90% من المداخيل الصافية للأساتذة أصحاب الكتب.'
-                  : 'Commission plateforme plafonnée à 10% (1000 bps). 90% des ventes nettes sont reversés directement à l\'auteur certifié.'}
+                  ? 'عمولة المنصة محددة بنسبة 20% لتغطية تكاليف الخوادم ومعالجة الدفع، مع صرف 80% من المداخيل الصافية للأساتذة أصحاب الكتب.'
+                  : 'Commission plateforme fixée à 20% (2000 bps). 80% des ventes nettes sont reversés directement à l\'auteur certifié.'}
               </p>
             </div>
 

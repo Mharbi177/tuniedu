@@ -107,7 +107,7 @@ export default function AdminDashboardPage() {
           }`}
         >
           <Icons.CreditCard className="w-4 h-4" />
-          <span>{lang === 'ar' ? 'دفتر العمليات والعمولات (10% / 90%)' : 'Grand Livre & Commissions (10% / 90%)'}</span>
+          <span>{lang === 'ar' ? 'دفتر العمليات والعمولات (20% / 80%)' : 'Grand Livre & Commissions (20% / 80%)'}</span>
         </button>
       </div>
 
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="text-xs font-semibold text-blue-700 px-3 py-1.5 rounded-xl bg-white border border-blue-200 shadow-xs">
-              {lang === 'ar' ? 'العمولة المعتمدة : 10% (1000 bps)' : 'Commission validée : 10% (1000 bps)'}
+              {lang === 'ar' ? 'العمولة المعتمدة : 20% (2000 bps)' : 'Commission validée : 20% (2000 bps)'}
             </div>
           </div>
         </div>

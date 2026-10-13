@@ -1,6 +1,6 @@
 import { PaymentStatus, PurchaseStatus, LedgerEntryType } from '@tuniedu/shared-types';
 
-export const PLATFORM_COMMISSION_BPS = 1000; // 10.00%
+export const PLATFORM_COMMISSION_BPS = 2000; // 20.00%
 export const CURRENCY = 'TND';
 
 export interface PaymentInitializationRequest {
@@ -42,7 +42,7 @@ export interface CommissionCalculation {
 
 /**
  * Calculates platform commission and professor net earnings
- * Default: 10% (1000 bps)
+ * Default: 20% (2000 bps)
  */
 export function calculateCommission(priceMillimes: number, bps: number = PLATFORM_COMMISSION_BPS): CommissionCalculation {
   const platformFeeMillimes = Math.round((priceMillimes * bps) / 10000);

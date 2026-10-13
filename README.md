@@ -15,9 +15,9 @@
 2. **Démonstrations & Corrigés Immédiats** :
    - Dès la validation de l'achat, l'élève débloque sans délai l'intégralité des corrections détaillées rédigées et visées par les auteurs.
 
-3. **Modèle Économique & Grand Livre Immuable (Commission 10%)** :
-   - Commission de plateforme fixée contractuellement à **10% (1000 points de base)** pour couvrir l'infrastructure haute disponibilité, la protection contre la copie, le filigrane dynamique et les frais bancaires.
-   - **90% des revenus nets** sont reversés chaque mois aux enseignants auteurs par virement bancaire (RIB).
+3. **Modèle Économique & Grand Livre Immuable (Commission 20%)** :
+   - Commission de plateforme fixée contractuellement à **20% (2000 points de base)** pour couvrir l'infrastructure haute disponibilité, la protection contre la copie, le filigrane dynamique et les frais bancaires.
+   - **80% des revenus nets** sont reversés chaque mois aux enseignants auteurs par virement bancaire (RIB).
    - Toutes les valeurs monétaires sont enregistrées sous forme d'entiers en **Millimes** (1 DT = 1000 Millimes).
    - Grand livre comptable immuable (`FinancialLedgerEntry`) garantissant une traçabilité sans réécriture d'historique.
 
@@ -47,11 +47,11 @@ tuniedu/
 │   └── web/                                # Application Next.js 16 (App Router + TypeScript + Tailwind)
 │       ├── app/
 │       │   ├── (public)                    # Accueil (/), Catalogue (/catalogue), Fiches Manuels (/catalogue/[slug])
-│       │   ├── connexion/                  # Authentification avec onglets Élève, Parent (Child ID), Professeur (10%)
+│       │   ├── connexion/                  # Authentification avec onglets Élève, Parent (Child ID), Professeur (20%)
 │       │   ├── inscription/                # Inscription unifiée avec profilage et accord contractuel
 │       │   ├── student/                    # Bibliothèque (/library), Lecteur (/library/[id]), Exercices, Progrès
 │       │   ├── parent/                     # Espace Parent & Supervision hebdomadaire de l'enfant lié
-│       │   ├── professor/                  # Studio Auteur, Dépôt de manuscrit PDF, Grand Livre (10%)
+│       │   ├── professor/                  # Studio Auteur, Dépôt de manuscrit PDF, Grand Livre (20%)
 │       │   ├── admin/                      # Calendrier national Africa/Tunis, Vérifications, Banc SEC
 │       │   ├── checkout/                   # Simulateur de passerelle bancaire nationale (Flouci / Carte)
 │       │   └── api/                        # Route Handlers sécurisés & livraison des planches
@@ -70,7 +70,7 @@ tuniedu/
 ├── packages/
 │   ├── shared-types/                       # Types TypeScript et Enums de référence
 │   ├── authorization/                      # Moteur RBAC & politiques d'accès SEC-01 à SEC-16
-│   ├── payments/                           # Adaptateur de paiement, machine à états & commission 10%
+│   ├── payments/                           # Adaptateur de paiement, machine à états & commission 20%
 │   └── validation/                         # Schémas de validation des commandes et calendrier
 ├── workers/
 │   └── book-processing/                   # Sandbox d'isolation PDF & rendu des planches
@@ -136,7 +136,7 @@ npm run build
 | **SEC-05** | Redirection vers l'URL de succès sans webhook signé | Validé (Droit refusé) |
 | **SEC-06** | Protection contre le rejeu & idempotence de transaction | Validé (Clé d'idempotence imposée) |
 | **SEC-07** | Webhook avec signature altérée ou falsifiée | Validé (Rejeté) |
-| **SEC-08** | Stockage en Millimes entiers & répartition stricte 10% / 90% | Validé (1000 bps calculé sans arrondi flottant) |
+| **SEC-08** | Stockage en Millimes entiers & répartition stricte 20% / 80% | Validé (2000 bps calculé sans arrondi flottant) |
 | **SEC-09** | Enseignant tente d'éditer le brouillon d'un confrère | Validé (Bloqué) |
 | **SEC-10** | Enseignant non vérifié tente de publier un livre | Validé (Bloqué) |
 | **SEC-11** | Parent tente d'accéder aux données d'un enfant non rattaché | Validé (Bloqué) |

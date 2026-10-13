@@ -41,12 +41,12 @@ export default function ConnexionPage() {
     e.preventDefault();
     setErrorMessage('');
 
-    // Validation for Professor: must accept 10% platform terms
+    // Validation for Professor: must accept 20% platform terms
     if (activeRole === 'PROFESSOR' && !acceptedCommissionTerms) {
       setErrorMessage(
         lang === 'ar'
-          ? 'يجب الموافقة الصريحة على شروط المنصة وعمولة الـ 10% على مبيعات الكتب لمتابعة تسجيل الدخول.'
-          : 'Vous devez expressément accepter les conditions générales et la commission de plateforme de 10% sur les livres pour accéder à votre espace auteur.'
+          ? 'يجب الموافقة الصريحة على شروط المنصة وعمولة الـ 20% على مبيعات الكتب لمتابعة تسجيل الدخول.'
+          : 'Vous devez expressément accepter les conditions générales et la commission de plateforme de 20% sur les livres pour accéder à votre espace auteur.'
       );
       return;
     }
@@ -279,25 +279,25 @@ export default function ConnexionPage() {
                   <Icons.CreditCard className="w-4 h-4 text-blue-700" />
                   <span>
                     {lang === 'ar'
-                      ? 'ميثاق النشر وعمولة المنصة (10% على كل كتاب) :'
-                      : 'Conditions d\'Édition & Commission Plateforme (10%) :'}
+                      ? 'ميثاق النشر وعمولة المنصة (20% على كل كتاب) :'
+                      : 'Conditions d\'Édition & Commission Plateforme (20%) :'}
                   </span>
                 </div>
                 <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                  10% (1000 bps)
+                  20% (2000 bps)
                 </span>
               </div>
 
               <div className="p-3 bg-white rounded-lg border border-slate-200 text-[11px] text-slate-600 leading-relaxed space-y-1.5">
                 <p>
                   {lang === 'ar'
-                    ? 'تنص الشروط التعاقدية لمنصة TuniEdu على اقتطاع عمولة بنسبة 10% من سعر بيع كل كتاب لتغطية استضافة الخوادم المشفرة، حماية الملكية الفكرية، البصمة المائية الرقمية، ورسوم معالجة الدفع الإلكتروني.'
-                    : 'Les conditions contractuelles de TuniEdu fixent la commission de plateforme à 10% (1000 bps) sur le prix de vente de chaque manuel pour la sécurisation des contenus, le filigrane nominatif anti-piratage, l\'hébergement haute disponibilité et les frais de passerelle bancaire.'}
+                    ? 'تنص الشروط التعاقدية لمنصة TuniEdu على اقتطاع عمولة بنسبة 20% من سعر بيع كل كتاب لتغطية استضافة الخوادم المشفرة، حماية الملكية الفكرية، البصمة المائية الرقمية، ورسوم معالجة الدفع الإلكتروني.'
+                    : 'Les conditions contractuelles de TuniEdu fixent la commission de plateforme à 20% (2000 bps) sur le prix de vente de chaque manuel pour la sécurisation des contenus, le filigrane nominatif anti-piratage, l\'hébergement haute disponibilité et les frais de passerelle bancaire.'}
                 </p>
                 <div className="font-semibold text-blue-900 pt-1 border-t border-slate-100">
                   {lang === 'ar'
-                    ? 'المستحقات الصافية للمؤلّف : 90% تصرف شهريا عبر تحويل بنكي رسمي (RIB).'
-                    : 'Reversement contractuel : 90% des recettes nettes sont versées mensuellement par virement bancaire sur votre RIB tunisien.'}
+                    ? 'المستحقات الصافية للمؤلّف : 80% تصرف شهريا عبر تحويل بنكي رسمي (RIB).'
+                    : 'Reversement contractuel : 80% des recettes nettes sont versées mensuellement par virement bancaire sur votre RIB tunisien.'}
                 </div>
               </div>
 
@@ -310,8 +310,8 @@ export default function ConnexionPage() {
                 />
                 <span className="text-[11px] text-slate-900 font-semibold leading-tight">
                   {lang === 'ar'
-                    ? 'أوافق بصفتي أستاذاً مؤلفاً على شروط المنصة وعمولة الـ 10% على مبيعات كتبي.'
-                    : 'J\'accepte expressément les conditions de la plateforme et la commission de 10% sur la vente de mes manuels scolaires.'}
+                    ? 'أوافق بصفتي أستاذاً مؤلفاً على شروط المنصة وعمولة الـ 20% على مبيعات كتبي.'
+                    : 'J\'accepte expressément les conditions de la plateforme et la commission de 20% sur la vente de mes manuels scolaires.'}
                 </span>
               </label>
             </div>
