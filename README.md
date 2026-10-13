@@ -37,6 +37,10 @@
    - Palette reposante vert sauge et ardoise académique (`#1E3A2F`, `#244C3D`, `#EEF5F1`) stimulant la concentration sans fatigue des muscles oculaires.
    - Support bilingue intégral Français / العربية avec gestion bidirectionnelle dynamique (`dir="rtl"`).
 
+> [!NOTE]
+> **Dossier Juridique & Conformité Réglementaire en Tunisie** :
+> Pour la liste exhaustive des démarches et pièces légales (SUARL/SARL, RNE, Patente, contrats d'édition 20%/80%, déclaration INPDP pour mineurs, agréments Flouci/BCT), consultez le [**Guide Juridique & Réglementaire (docs/LEGAL_COMPLIANCE_TUNISIA.md)**](./docs/LEGAL_COMPLIANCE_TUNISIA.md) ou le résumé exécutif dans [**LEGAL.md**](./LEGAL.md).
+
 ---
 
 ## 2. Architecture du Monorepo
