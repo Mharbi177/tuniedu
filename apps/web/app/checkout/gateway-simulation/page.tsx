@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Icons } from '@/components/ui/icons';
+import { store } from '@/lib/store';
 
 function GatewaySimulationContent() {
   const searchParams = useSearchParams();
@@ -11,6 +12,7 @@ function GatewaySimulationContent() {
   const paymentId = searchParams.get('paymentId') || 'pay_demo_1';
   const amount = searchParams.get('amount') || '22000';
   const ref = searchParams.get('ref') || 'FLOUCI-REF-9982';
+  const bookId = searchParams.get('bookId') || 'book_math_9b';
 
   const [status, setStatus] = useState<'PENDING' | 'CONFIRMING' | 'SUCCESS' | 'CANCELLED'>('PENDING');
 
@@ -24,6 +26,13 @@ function GatewaySimulationContent() {
 
     setStatus('CONFIRMING');
     setTimeout(() => {
+      // Execute atomic checkout in store
+      store.processCheckout({
+        userId: store.currentUserId,
+        bookIds: [bookId],
+        paymentProvider: 'FLOUCI',
+        idempotencyKey: `idemp_gw_${Date.now()}_${paymentId}`,
+      });
       setStatus('SUCCESS');
     }, 1000);
   };

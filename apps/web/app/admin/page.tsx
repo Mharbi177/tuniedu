@@ -152,8 +152,8 @@ export default function AdminDashboardPage() {
                         {lang === 'ar' ? 'نجح' : 'RÉUSSI'}
                       </span>
                     </div>
-                    <div className="text-xs font-semibold text-slate-800">{t.title}</div>
-                    <div className="text-[11px] text-slate-500 font-mono leading-relaxed">{t.result}</div>
+                    <div className="text-xs font-semibold text-slate-800">{t.name || t.title}</div>
+                    <div className="text-[11px] text-slate-500 font-mono leading-relaxed">{t.details || t.result}</div>
                   </div>
                 ))}
               </div>
@@ -161,8 +161,8 @@ export default function AdminDashboardPage() {
           ) : (
             <div className="p-8 text-center bg-blue-50/20 rounded-2xl border border-dashed border-blue-200 text-xs text-slate-500">
               {lang === 'ar'
-                ? 'اضغط على زر التشغيل أعلاه لاختبار مصفوفة الأمان الـ 11 والتحقق من سلامة البيئة الإنتاجية.'
-                : 'Cliquez sur le bouton ci-dessus pour lancer les 11 tests de sécurité automatisés.'}
+                ? 'اضغط على زر التشغيل أعلاه لاختبار مصفوفة الأمان الـ 13 والتحقق من سلامة البيئة الإنتاجية.'
+                : 'Cliquez sur le bouton ci-dessus pour lancer la suite complète des 13 tests de sécurité automatisés.'}
             </div>
           )}
         </div>

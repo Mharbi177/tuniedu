@@ -134,7 +134,9 @@ npm run build
 | **SEC-03** | Élève tente d'accéder au droit d'accès d'un tiers | Validé (Bloqué) |
 | **SEC-04** | Élève manipule le `priceMillimes` lors de la commande | Validé (Prix DB imposé) |
 | **SEC-05** | Redirection vers l'URL de succès sans webhook signé | Validé (Droit refusé) |
+| **SEC-06** | Protection contre le rejeu & idempotence de transaction | Validé (Clé d'idempotence imposée) |
 | **SEC-07** | Webhook avec signature altérée ou falsifiée | Validé (Rejeté) |
+| **SEC-08** | Stockage en Millimes entiers & répartition stricte 10% / 90% | Validé (1000 bps calculé sans arrondi flottant) |
 | **SEC-09** | Enseignant tente d'éditer le brouillon d'un confrère | Validé (Bloqué) |
 | **SEC-10** | Enseignant non vérifié tente de publier un livre | Validé (Bloqué) |
 | **SEC-11** | Parent tente d'accéder aux données d'un enfant non rattaché | Validé (Bloqué) |

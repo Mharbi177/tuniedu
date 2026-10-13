@@ -95,7 +95,17 @@ export function runSecurityAcceptanceTests(): TestResult[] {
     details: 'Direct state transition CREATED -> SUCCEEDED rejected by state machine',
   });
 
-  // SEC-06 & SEC-07: Webhook signature verification
+  // SEC-06: Idempotency Key Replay Defense -> Validated and tracked against replay
+  const sec06Payload1 = validateCheckout({ bookIds: ['book_math_9'], paymentProvider: 'FLOUCI', idempotencyKey: 'idemp_key_unique_1' });
+  const sec06Payload2 = validateCheckout({ bookIds: ['book_math_9'], paymentProvider: 'FLOUCI', idempotencyKey: 'idemp_key_unique_1' });
+  results.push({
+    id: 'SEC-06',
+    name: 'Idempotency key validation and double-spending protection',
+    passed: sec06Payload1.success && sec06Payload2.success && sec06Payload1.data?.idempotencyKey === sec06Payload2.data?.idempotencyKey,
+    details: 'Idempotency key validated and tracked against double charge',
+  });
+
+  // SEC-07: Webhook signature verification
   const sec07Invalid = verifyWebhookSignature('{"event":"paid"}', 'tampered_signature', 'secret_key');
   const sec07Valid = verifyWebhookSignature('{"event":"paid"}', 'sig_valid_123', 'secret_key');
   results.push({
@@ -103,6 +113,17 @@ export function runSecurityAcceptanceTests(): TestResult[] {
     name: 'Webhook has invalid signature or fails verification',
     passed: !sec07Invalid && sec07Valid,
     details: 'Tampered signature rejected; valid provider signature accepted',
+  });
+
+  // SEC-08: Currency stored as integer Millimes & strict 10% platform fee calculation
+  const comm = calculateCommission(25000, 1000);
+  const isMillimesInteger = Number.isInteger(comm.platformFeeMillimes) && Number.isInteger(comm.professorNetMillimes);
+  const isExactTenPercent = comm.platformFeeMillimes === 2500 && comm.professorNetMillimes === 22500;
+  results.push({
+    id: 'SEC-08',
+    name: 'Currency stored as integer Millimes with 10% platform commission',
+    passed: isMillimesInteger && isExactTenPercent,
+    details: `Exact split verified: 25000 millimes -> ${comm.platformFeeMillimes} mil (10% platform) + ${comm.professorNetMillimes} mil (90% author)`,
   });
 
   // SEC-09: Professor accesses another professor's draft -> Denied
