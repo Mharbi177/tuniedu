@@ -5,11 +5,14 @@ import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
 import { store } from '@/lib/store';
 import { BookCard } from '@/components/catalogue/BookCard';
+import { BookPreviewModal } from '@/components/catalogue/BookPreviewModal';
 import { Icons } from '@/components/ui/icons';
+import { Book } from '@/lib/store';
 
 export default function HomePage() {
   const { lang, t, isRtl } = useLanguage();
   const [selectedStage, setSelectedStage] = useState('ALL');
+  const [previewBook, setPreviewBook] = useState<Book | null>(null);
 
   const books = store.books;
   const filteredBooks = selectedStage === 'ALL'
@@ -187,6 +190,7 @@ export default function HomePage() {
                 key={book.id}
                 book={book}
                 hasAccess={hasAccess}
+                onPreview={(b) => setPreviewBook(b)}
               />
             );
           })}
@@ -251,6 +255,14 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Quick Book Preview Modal */}
+      <BookPreviewModal
+        book={previewBook}
+        isOpen={Boolean(previewBook)}
+        onClose={() => setPreviewBook(null)}
+        hasAccess={previewBook ? store.hasActiveEntitlement(store.currentUserId, previewBook.id) : false}
+      />
     </div>
   );
 }

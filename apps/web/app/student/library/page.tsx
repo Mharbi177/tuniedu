@@ -11,6 +11,7 @@ export default function StudentLibraryPage() {
   const currentUserId = store.currentUserId;
   const user = store.getCurrentUser();
   const [nowIso, setNowIso] = useState('2026-10-12T12:00:00.000Z');
+  const [filterSubject, setFilterSubject] = useState<string>('ALL');
 
   useEffect(() => {
     setNowIso(new Date().toISOString());
@@ -24,9 +25,17 @@ export default function StudentLibraryPage() {
   const purchasedBooks = entitlements
     .map((e) => {
       const book = store.books.find((b) => b.id === e.bookId);
-      return { book, entitlement: e };
+      // Simulated study progress for each book
+      const pagesRead = book?.id === 'book_math_9b' ? 42 : 18;
+      const progressPercent = book ? Math.round((pagesRead / book.pageCount) * 100) : 0;
+      return { book, entitlement: e, pagesRead, progressPercent };
     })
     .filter((item) => item.book !== undefined);
+
+  const filteredBooks = purchasedBooks.filter((item) => {
+    if (filterSubject === 'ALL') return true;
+    return item.book?.subjectId === filterSubject;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -45,8 +54,8 @@ export default function StudentLibraryPage() {
         </span>
       </div>
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-blue-100">
+      {/* Header with National Concours Countdown Widget */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-blue-100">
         <div>
           <div className="text-xs font-bold text-blue-700 uppercase tracking-wider">
             {lang === 'ar' ? 'فضاء التلميذ' : 'Espace Élève'}
@@ -61,26 +70,83 @@ export default function StudentLibraryPage() {
           </p>
         </div>
 
+        {/* National Concours Pilot Countdown */}
+        <div className="bg-[#0F2942] text-white p-4 rounded-2xl border border-[#0A1C2E] shadow-sm flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
+            <Icons.Calendar className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="text-[10px] text-blue-200 uppercase font-semibold">
+              {lang === 'ar' ? 'مناظرة الدخول للمعاهد النموذجية (نوفيام) :' : 'Concours Lycées Pilotes (9ème) :'}
+            </div>
+            <div className="text-sm font-bold text-white font-serif">
+              {lang === 'ar' ? 'دورة جوان 2027 · متبقي 242 يوماً' : 'Session Juin 2027 · J-242'}
+            </div>
+          </div>
+          <Link
+            href="/student/progress"
+            className="px-3 py-1.5 rounded-xl bg-[#1B3A57] hover:bg-blue-800 text-blue-100 text-xs font-semibold transition"
+          >
+            {lang === 'ar' ? 'تقدمي' : 'Mes Progrès'}
+          </Link>
+        </div>
+      </div>
+
+      {/* Subject Filter Tabs */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <button
+            onClick={() => setFilterSubject('ALL')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+              filterSubject === 'ALL'
+                ? 'bg-blue-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {lang === 'ar' ? 'جميع الكتب' : 'Tous les Manuels'} ({purchasedBooks.length})
+          </button>
+          <button
+            onClick={() => setFilterSubject('subj_math')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+              filterSubject === 'subj_math'
+                ? 'bg-blue-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {lang === 'ar' ? 'الرياضيات' : 'Mathématiques'}
+          </button>
+          <button
+            onClick={() => setFilterSubject('subj_phys')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+              filterSubject === 'subj_phys'
+                ? 'bg-blue-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {lang === 'ar' ? 'الفيزياء' : 'Physique'}
+          </button>
+        </div>
+
         <Link
           href="/catalogue"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs shadow-xs transition"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs shadow-xs transition"
         >
           <Icons.Book className="w-4 h-4" />
-          <span>{lang === 'ar' ? 'إضافة كتاب جديد' : 'Ajouter un Manuel'}</span>
+          <span>{lang === 'ar' ? 'استكشاف كتب جديدة' : 'Découvrir d\'Autres Ouvrages'}</span>
         </Link>
       </div>
 
-      {/* Bookshelf */}
-      {purchasedBooks.length > 0 ? (
+      {/* Bookshelf Grid */}
+      {filteredBooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {purchasedBooks.map(({ book, entitlement }) => {
+          {filteredBooks.map(({ book, entitlement, pagesRead, progressPercent }) => {
             const isExpired = nowIso >= entitlement.expiresAt;
             const expiryDate = new Date(entitlement.expiresAt).toLocaleDateString(lang === 'ar' ? 'ar-TN' : 'fr-TN');
 
             return (
               <div
                 key={entitlement.id}
-                className="bg-white rounded-3xl border border-blue-100 shadow-sm overflow-hidden flex flex-col justify-between hover:border-blue-300 transition"
+                className="bg-white rounded-3xl border border-blue-100 shadow-sm overflow-hidden flex flex-col justify-between hover:border-blue-300 hover:shadow-md transition"
               >
                 <div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
@@ -100,58 +166,78 @@ export default function StudentLibraryPage() {
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-base text-slate-950 font-serif leading-snug">
-                    {book!.title}
-                  </h3>
+                  <div>
+                    <h3 className="font-bold text-base text-slate-950 font-serif leading-snug">
+                      {book!.title}
+                    </h3>
+                    <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                      <span>{book!.professorName}</span>
+                      <span>•</span>
+                      <span>{book!.pageCount} {lang === 'ar' ? 'صفحة' : 'pages'}</span>
+                    </div>
+                  </div>
 
-                  <div className="text-xs text-slate-500 space-y-1">
-                    <div>
-                      {lang === 'ar' ? 'الأستاذ المؤلف :' : 'Auteur :'}{' '}
-                      <strong className="text-slate-900">{book!.professorName}</strong>
+                  {/* Reading Progress Indicator */}
+                  <div className="space-y-1.5 pt-2">
+                    <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
+                      <span>{lang === 'ar' ? `التقدم : ${pagesRead}/${book!.pageCount} صفحة` : `Progression : ${pagesRead}/${book!.pageCount} pages`}</span>
+                      <span className="font-mono font-bold text-blue-700">{progressPercent}%</span>
                     </div>
-                    <div className="text-[11px] font-mono text-slate-400">
-                      {lang === 'ar' ? 'صالح إلى غاية :' : 'Valide jusqu\'au :'}{' '}
-                      {expiryDate} (23:59:59)
+                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        style={{ width: `${progressPercent}%` }}
+                      />
                     </div>
+                  </div>
+
+                  <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-3 flex items-center justify-between">
+                    <span>{lang === 'ar' ? 'تاريخ انتهاء النفاذ :' : 'Échéance légale :'}</span>
+                    <span className="font-mono font-semibold text-slate-700">{expiryDate}</span>
                   </div>
                 </div>
 
-                <div className="p-5 bg-blue-50/30 border-t border-blue-50 flex items-center justify-between gap-3">
-                  <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
-                    <Icons.Shield className="w-3.5 h-3.5 text-blue-700" />
-                    {lang === 'ar' ? 'بصمة مائية نشطة' : 'Filigrane Actif'}
-                  </span>
-
+                <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
                   <Link
                     href={`/student/library/${book!.id}`}
-                    className="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs shadow-xs transition flex items-center gap-1.5"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs transition shadow-xs flex items-center justify-center gap-2"
                   >
                     <Icons.Eye className="w-4 h-4" />
-                    <span>{lang === 'ar' ? 'فتح وقراءة' : 'Lire le Manuel'}</span>
+                    <span>{lang === 'ar' ? 'مواصلة القراءة' : 'Reprendre la Lecture'}</span>
                   </Link>
+
+                  {book!.chapters[0]?.exercises[0] && (
+                    <Link
+                      href={`/student/exercises/${book!.chapters[0].exercises[0].id}`}
+                      className="py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-white text-slate-700 text-xs font-semibold transition"
+                      title={lang === 'ar' ? 'التمارين والإصلاحات' : 'Exercices'}
+                    >
+                      <Icons.Sparkles className="w-4 h-4 text-amber-500" />
+                    </Link>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="py-20 text-center space-y-4 bg-white rounded-3xl border border-blue-100 p-8 shadow-xs">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mx-auto">
-            <Icons.Book className="w-6 h-6" />
+        <div className="bg-white rounded-3xl border border-blue-100 p-12 text-center space-y-4 shadow-sm">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center mx-auto">
+            <Icons.Book className="w-7 h-7" />
           </div>
-          <h3 className="font-bold text-base text-slate-900">
-            {lang === 'ar' ? 'مكتبتك الرقمية لا تحتوي على كتب حالياً' : 'Votre bibliothèque est vide pour le moment'}
+          <h3 className="font-bold text-lg text-slate-900">
+            {lang === 'ar' ? 'لا توجد كتب مدرسية في هذا التصنيف' : 'Aucun manuel dans cette catégorie'}
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             {lang === 'ar'
-              ? 'تصفح الدليل المدرسي لاقتناء أول كتاب رسمي مطابق للبرنامج البيداغوجي التونسي.'
-              : 'Consultez le catalogue pour acquérir l\'accès à votre premier manuel scolaire conforme au programme tunisien.'}
+              ? 'تصفح دليل الكتب لاقتناء المؤلفات الرسمية المعتمدة لسنوات الأساسي والابتدائي.'
+              : 'Explorez notre catalogue officiel pour activer vos manuels et corrigés détaillés.'}
           </p>
           <Link
             href="/catalogue"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-700 text-white font-semibold text-xs shadow-xs hover:bg-blue-800"
           >
-            {lang === 'ar' ? 'استعراض الدليل المدرسي' : 'Découvrir le Catalogue'}
+            <span>{lang === 'ar' ? 'الذهاب للدليل' : 'Voir le Catalogue'}</span>
           </Link>
         </div>
       )}

@@ -15,6 +15,8 @@ export default function BookDetailPage() {
 
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [selectedPaymentProvider, setSelectedPaymentProvider] = useState<'FLOUCI' | 'CARTE_BANCAIRE'>('FLOUCI');
+  const [activeTab, setActiveTab] = useState<'SYLLABUS' | 'METHODOLOGY' | 'AUTHOR'>('SYLLABUS');
 
   const book = store.books.find((b) => b.slug === slug) || store.books[0];
   const activeYear = store.getActiveAcademicYear();
@@ -69,7 +71,7 @@ export default function BookDetailPage() {
         <span className="text-slate-900 font-semibold truncate max-w-xs">{book.title}</span>
       </div>
 
-      {/* Main Card */}
+      {/* Main Showcase Card */}
       <div className="bg-white rounded-3xl border border-blue-100 shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0">
         {/* Visual Cover Column */}
         <div className="lg:col-span-5 bg-[#0F2942] p-8 sm:p-10 flex flex-col justify-between text-white relative border-b lg:border-b-0 lg:border-r border-[#0A1C2E]">
@@ -95,10 +97,10 @@ export default function BookDetailPage() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-blue-900/50 space-y-3">
+          <div className="pt-8 border-t border-blue-900/50 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-900/80 border border-blue-800 flex items-center justify-center text-xs font-bold font-mono text-blue-200">
-                PR
+                {book.professorName.slice(0, 2).toUpperCase()}
               </div>
               <div>
                 <div className="flex items-center gap-1.5 text-sm font-bold text-white">
@@ -110,6 +112,17 @@ export default function BookDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Quick Demo Preview Link */}
+            {hasAccess && (
+              <Link
+                href={`/student/library/${book.id}`}
+                className="w-full py-2.5 px-4 rounded-xl bg-[#1B3A57] hover:bg-blue-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2"
+              >
+                <Icons.Eye className="w-4 h-4 text-blue-300" />
+                <span>{lang === 'ar' ? 'معاينة القارئ الرقمي (صفحة 1)' : 'Ouvrir le Lecteur Numérique'}</span>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -140,7 +153,7 @@ export default function BookDetailPage() {
               </p>
             </div>
 
-            {/* Corrections included */}
+            {/* Corrections included banner */}
             <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 flex items-center gap-3">
               <Icons.Shield className="w-5 h-5 text-blue-700 shrink-0" />
               <div className="text-xs text-blue-950">
@@ -150,6 +163,42 @@ export default function BookDetailPage() {
                   : 'dès la confirmation du paiement, l\'ensemble des corrections et fiches méthodologiques sont débloqués.'}
               </div>
             </div>
+
+            {/* Payment Method Selector (if not yet owned) */}
+            {!hasAccess && !purchaseSuccess && (
+              <div className="space-y-2 pt-2">
+                <label className="text-xs font-bold text-slate-700">
+                  {lang === 'ar' ? 'وسيلة الدفع الوطنية المفضلة :' : 'Mode de Paiement National :'}
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaymentProvider('FLOUCI')}
+                    className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition ${
+                      selectedPaymentProvider === 'FLOUCI'
+                        ? 'bg-blue-50 border-blue-700 text-blue-900 ring-2 ring-blue-700/20'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Flouci / Konnect</span>
+                    <Icons.CheckCircle className={`w-4 h-4 ${selectedPaymentProvider === 'FLOUCI' ? 'text-blue-700' : 'text-slate-300'}`} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaymentProvider('CARTE_BANCAIRE')}
+                    className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition ${
+                      selectedPaymentProvider === 'CARTE_BANCAIRE'
+                        ? 'bg-blue-50 border-blue-700 text-blue-900 ring-2 ring-blue-700/20'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{lang === 'ar' ? 'بطاقة بنكية / بريدية' : 'Carte Bancaire / CIB'}</span>
+                    <Icons.CheckCircle className={`w-4 h-4 ${selectedPaymentProvider === 'CARTE_BANCAIRE' ? 'text-blue-700' : 'text-slate-300'}`} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Pricing Box & CTA */}
@@ -202,6 +251,52 @@ export default function BookDetailPage() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Chapters & Contents Syllabus Section */}
+      <div className="bg-white rounded-3xl border border-blue-100 p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="flex items-center justify-between pb-4 border-b border-blue-100">
+          <div>
+            <h3 className="text-lg font-bold text-slate-950 font-serif">
+              {lang === 'ar' ? 'فهرس المحاور والتمارين المعتمدة' : 'Programme Détaillé des Chapitres'}
+            </h3>
+            <p className="text-xs text-slate-500">
+              {lang === 'ar' ? 'جميع التمارين مرفقة بالإصلاحات البيداغوجية وسلم التقييم' : 'Chaque chapitre comporte cours illustrés, exercices types et solutions détaillées'}
+            </p>
+          </div>
+          <span className="text-xs text-blue-700 font-bold bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            {book.chapters.length} {lang === 'ar' ? 'محاور رسمية' : 'chapitres'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {book.chapters.map((ch, idx) => (
+            <div key={ch.id} className="p-4 rounded-2xl bg-blue-50/40 border border-blue-100/80 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-blue-900">
+                  {lang === 'ar' ? `المحور ${idx + 1}` : `Chapitre ${idx + 1}`}
+                </span>
+                <span className="text-slate-500 font-mono text-[11px]">p. {ch.startPage} – {ch.endPage}</span>
+              </div>
+              <h4 className="font-bold text-sm text-slate-900">{ch.title}</h4>
+              {ch.exercises && ch.exercises.length > 0 && (
+                <div className="pt-2 flex items-center justify-between text-xs text-slate-500 border-t border-blue-100/60">
+                  <span>{ch.exercises.length} {lang === 'ar' ? 'تمارين مع الإصلاح' : 'exercices avec corrigés'}</span>
+                  {hasAccess ? (
+                    <Link
+                      href={`/student/exercises/${ch.exercises[0].id}`}
+                      className="text-blue-700 font-semibold hover:underline"
+                    >
+                      {lang === 'ar' ? 'حل التمارين ←' : 'Accéder aux exercices →'}
+                    </Link>
+                  ) : (
+                    <span className="text-slate-400">{lang === 'ar' ? 'مشمول مع الكتاب' : 'Inclus à l\'achat'}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
