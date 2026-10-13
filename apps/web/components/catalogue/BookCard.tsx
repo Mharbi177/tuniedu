@@ -9,9 +9,10 @@ import { Icons } from '@/components/ui/icons';
 interface BookCardProps {
   book: Book;
   hasAccess?: boolean;
+  onPreview?: (book: Book) => void;
 }
 
-export function BookCard({ book, hasAccess }: BookCardProps) {
+export function BookCard({ book, hasAccess, onPreview }: BookCardProps) {
   const { lang, t, isRtl } = useLanguage();
   const formattedPrice = (book.priceMillimes / 1000).toFixed(3);
 
@@ -93,7 +94,19 @@ export function BookCard({ book, hasAccess }: BookCardProps) {
             </div>
           </div>
 
-          <div>
+          <div className="flex items-center gap-2">
+            {onPreview && (
+              <button
+                type="button"
+                onClick={() => onPreview(book)}
+                className="inline-flex items-center gap-1 px-2.5 py-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 text-xs font-medium transition"
+                title={lang === 'ar' ? 'معاينة الفهرس والمحتوى' : 'Aperçu rapide du manuel'}
+              >
+                <Icons.Book className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden sm:inline">{lang === 'ar' ? 'معاينة' : 'Aperçu'}</span>
+              </button>
+            )}
+
             {hasAccess ? (
               <Link
                 href={`/student/library/${book.id}`}

@@ -6,31 +6,42 @@ import { useLanguage } from '@/lib/language-context';
 import { BookCard } from '@/components/catalogue/BookCard';
 import { LevelSelector } from '@/components/catalogue/LevelSelector';
 import { SubjectFilter } from '@/components/catalogue/SubjectFilter';
+import { BookPreviewModal } from '@/components/catalogue/BookPreviewModal';
 import { Icons } from '@/components/ui/icons';
+import { Book } from '@/lib/store';
 
 export default function CataloguePage() {
   const { lang, isRtl } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStage, setSelectedStage] = useState('ALL');
   const [selectedSubject, setSelectedSubject] = useState('ALL');
+  const [sortBy, setSortBy] = useState<'RECOMMENDED' | 'PRICE_ASC' | 'PRICE_DESC' | 'PAGES'>('RECOMMENDED');
+  const [previewBook, setPreviewBook] = useState<Book | null>(null);
 
   const books = store.books;
 
-  const filteredBooks = books.filter((b) => {
-    // Stage filter
-    if (selectedStage !== 'ALL' && b.stage !== selectedStage) return false;
-    // Subject filter
-    if (selectedSubject !== 'ALL' && b.subjectId !== selectedSubject) return false;
-    // Search query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchTitle = b.title.toLowerCase().includes(q);
-      const matchProf = b.professorName.toLowerCase().includes(q);
-      const matchDesc = b.description.toLowerCase().includes(q);
-      if (!matchTitle && !matchProf && !matchDesc) return false;
-    }
-    return true;
-  });
+  const filteredBooks = books
+    .filter((b) => {
+      // Stage filter
+      if (selectedStage !== 'ALL' && b.stage !== selectedStage) return false;
+      // Subject filter
+      if (selectedSubject !== 'ALL' && b.subjectId !== selectedSubject) return false;
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = b.title.toLowerCase().includes(q);
+        const matchProf = b.professorName.toLowerCase().includes(q);
+        const matchDesc = b.description.toLowerCase().includes(q);
+        if (!matchTitle && !matchProf && !matchDesc) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'PRICE_ASC') return a.priceMillimes - b.priceMillimes;
+      if (sortBy === 'PRICE_DESC') return b.priceMillimes - a.priceMillimes;
+      if (sortBy === 'PAGES') return b.pageCount - a.pageCount;
+      return 0; // RECOMMENDED
+    });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -89,10 +100,27 @@ export default function CataloguePage() {
       </div>
 
       {/* Filters Area */}
-      <div className="space-y-3 bg-white p-4 sm:p-5 rounded-2xl border border-blue-100 shadow-xs">
-        <div className="text-xs font-semibold text-slate-900">
-          {lang === 'ar' ? 'تصفية حسب المرحلة التعليمية :' : 'Filtrer par Cycle :'}
+      <div className="space-y-4 bg-white p-4 sm:p-5 rounded-2xl border border-blue-100 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="text-xs font-semibold text-slate-900">
+            {lang === 'ar' ? 'تصفية حسب المرحلة التعليمية :' : 'Filtrer par Cycle :'}
+          </div>
+          {/* Sorting */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500">{lang === 'ar' ? 'ترتيب حسب :' : 'Trier par :'}</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="py-1 px-2.5 rounded-lg border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 font-medium"
+            >
+              <option value="RECOMMENDED">{lang === 'ar' ? 'المقترحة للأسبوع' : 'Recommandés'}</option>
+              <option value="PRICE_ASC">{lang === 'ar' ? 'السعر: من الأقل إلى الأعلى' : 'Prix croissant'}</option>
+              <option value="PRICE_DESC">{lang === 'ar' ? 'السعر: من الأعلى إلى الأقل' : 'Prix décroissant'}</option>
+              <option value="PAGES">{lang === 'ar' ? 'عدد الصفحات' : 'Nombre de pages'}</option>
+            </select>
+          </div>
         </div>
+
         <LevelSelector
           selectedStage={selectedStage}
           onSelectStage={setSelectedStage}
@@ -102,7 +130,7 @@ export default function CataloguePage() {
           <div className="text-xs font-semibold text-slate-900">
             {lang === 'ar' ? 'المادة الدراسية :' : 'Matière :'}
           </div>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-slate-400 font-medium">
             {filteredBooks.length} {lang === 'ar' ? 'كتاب متاح' : 'ouvrage(s) disponible(s)'}
           </span>
         </div>
@@ -122,6 +150,7 @@ export default function CataloguePage() {
                 key={book.id}
                 book={book}
                 hasAccess={hasAccess}
+                onPreview={(b) => setPreviewBook(b)}
               />
             );
           })}
@@ -151,6 +180,14 @@ export default function CataloguePage() {
           </button>
         </div>
       )}
+
+      {/* Quick Preview Modal */}
+      <BookPreviewModal
+        book={previewBook}
+        isOpen={Boolean(previewBook)}
+        onClose={() => setPreviewBook(null)}
+        hasAccess={previewBook ? store.hasActiveEntitlement(store.currentUserId, previewBook.id) : false}
+      />
     </div>
   );
 }

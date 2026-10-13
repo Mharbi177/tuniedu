@@ -5,15 +5,128 @@ import { useLanguage } from '@/lib/language-context';
 import { WeeklyProgressCard } from '@/components/parent/WeeklyProgressCard';
 import { Icons } from '@/components/ui/icons';
 
+interface ChildRecord {
+  id: string;
+  code: string;
+  nameFr: string;
+  nameAr: string;
+  levelFr: string;
+  levelAr: string;
+  totalStudyHours: number;
+  exercisesCompleted: number;
+  averageScorePercentage: number;
+  weakTopicsFr: string[];
+  weakTopicsAr: string[];
+}
+
+const INITIAL_CHILDREN: ChildRecord[] = [
+  {
+    id: 'child_1',
+    code: 'TUN-9842',
+    nameFr: 'Elyes Mansour',
+    nameAr: 'إلياس منصور',
+    levelFr: '9ème Année de Base (Concours Neufième)',
+    levelAr: 'السنة التاسعة أساسي (مناظرة النوفيام)',
+    totalStudyHours: 4,
+    exercisesCompleted: 18,
+    averageScorePercentage: 88,
+    weakTopicsFr: [
+      'Développement des identités remarquables (2x - 3)²',
+      'Cosinus dans un triangle rectangle (Théorème de Pythagore)',
+    ],
+    weakTopicsAr: [
+      'نشر وتفكيك الجداءات المعتبرة (2x - 3)²',
+      'جيب تمام زاوية حادة في مثلث قائم (مبرهنة فيثاغورس)',
+    ],
+  },
+  {
+    id: 'child_2',
+    code: 'TUN-4190',
+    nameFr: 'Yasmine Mansour',
+    nameAr: 'ياسمين منصور',
+    levelFr: '7ème Année de Base',
+    levelAr: 'السنة السابعة أساسي',
+    totalStudyHours: 3,
+    exercisesCompleted: 22,
+    averageScorePercentage: 94,
+    weakTopicsFr: [
+      'Nombres décimaux et priorités opératoires',
+      'Symétrie axiale et constructions géométriques',
+    ],
+    weakTopicsAr: [
+      'الأعداد العشرية والأولويات في الحساب',
+      'التناظر المحوري والإنشاءات الهندسية',
+    ],
+  },
+];
+
 export default function ParentDashboardPage() {
   const { lang } = useLanguage();
-  const [inviteCode] = useState('TUN-9842');
+  const [children, setChildren] = useState<ChildRecord[]>(INITIAL_CHILDREN);
+  const [activeChildId, setActiveChildId] = useState<string>('child_1');
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const [inputChildCode, setInputChildCode] = useState('');
+  const [linkError, setLinkError] = useState('');
+  const [linkSuccess, setLinkSuccess] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const activeChild = children.find((c) => c.id === activeChildId) || children[0];
+
   const handleCopy = () => {
-    navigator.clipboard?.writeText(inviteCode);
+    navigator.clipboard?.writeText(activeChild.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLinkChild = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLinkError('');
+    setLinkSuccess('');
+
+    const trimmed = inputChildCode.trim().toUpperCase();
+    if (!trimmed.startsWith('TUN-') || trimmed.length < 8) {
+      setLinkError(
+        lang === 'ar'
+          ? 'صيغة المعرف غير صالحة. يجب أن يبدأ بـ TUN- متبوعاً بأربعة أرقام (مثال: TUN-5520)'
+          : 'Format invalide. Le code doit débuter par TUN- suivi de 4 chiffres (ex: TUN-5520)'
+      );
+      return;
+    }
+
+    if (children.some((c) => c.code === trimmed)) {
+      setLinkError(
+        lang === 'ar' ? 'هذا التلميذ مرتبط بالفعل بحسابكم.' : 'Cet élève est déjà rattaché à votre compte.'
+      );
+      return;
+    }
+
+    // Add new child
+    const newChild: ChildRecord = {
+      id: `child_${Date.now()}`,
+      code: trimmed,
+      nameFr: `Élève ${trimmed}`,
+      nameAr: `تلميذ ${trimmed}`,
+      levelFr: '8ème Année de Base',
+      levelAr: 'السنة الثامنة أساسي',
+      totalStudyHours: 2,
+      exercisesCompleted: 14,
+      averageScorePercentage: 82,
+      weakTopicsFr: ['Théorème de Thalès', 'Calcul littéral'],
+      weakTopicsAr: ['مبرهنة طاليس', 'الحساب الحرفي'],
+    };
+
+    setChildren([...children, newChild]);
+    setActiveChildId(newChild.id);
+    setInputChildCode('');
+    setLinkSuccess(
+      lang === 'ar'
+        ? `تم ربط التلميذ ${trimmed} بنجاح وتفعيل المتابعة الأسبوعية !`
+        : `Élève ${trimmed} rattaché avec succès ! Rapports activés.`
+    );
+    setTimeout(() => {
+      setLinkModalOpen(false);
+      setLinkSuccess('');
+    }, 1500);
   };
 
   return (
@@ -49,34 +162,66 @@ export default function ParentDashboardPage() {
           </p>
         </div>
 
-        {/* Link Invitation Code Button */}
-        <div className="bg-white p-3 rounded-2xl border border-blue-100 shadow-xs flex items-center gap-3">
-          <div className="text-left">
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">
-              {lang === 'ar' ? 'رمز ربط التلميذ :' : 'Code de liaison :'}
+        {/* Link Invitation Code & Action */}
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-3 rounded-2xl border border-blue-100 shadow-xs flex items-center gap-3">
+            <div className="text-left">
+              <div className="text-[10px] text-slate-400 uppercase font-semibold">
+                {lang === 'ar' ? 'معرف التلميذ الحالي :' : 'Child ID Actif :'}
+              </div>
+              <div className="text-sm font-mono font-bold text-slate-900">{activeChild.code}</div>
             </div>
-            <div className="text-sm font-mono font-bold text-slate-900">{inviteCode}</div>
+            <button
+              onClick={handleCopy}
+              className="px-3.5 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold transition shadow-xs"
+            >
+              {copied ? (lang === 'ar' ? 'تم النسخ' : 'Copié !') : (lang === 'ar' ? 'نسخ الرمز' : 'Copier')}
+            </button>
           </div>
+
           <button
-            onClick={handleCopy}
-            className="px-3.5 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold transition shadow-xs"
+            onClick={() => setLinkModalOpen(true)}
+            className="px-4 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-2"
           >
-            {copied ? (lang === 'ar' ? 'تم النسخ' : 'Copié !') : (lang === 'ar' ? 'نسخ الرمز' : 'Copier')}
+            <Icons.Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">{lang === 'ar' ? 'ربط تلميذ جديد' : 'Lier un Enfant'}</span>
           </button>
         </div>
       </div>
 
+      {/* Children Tab Switcher if multiple */}
+      {children.length > 1 && (
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+          <span className="text-xs text-slate-500 mr-2 font-medium">
+            {lang === 'ar' ? 'الأبناء المسجلون :' : 'Enfants rattachés :'}
+          </span>
+          {children.map((child) => {
+            const isSelected = child.id === activeChildId;
+            return (
+              <button
+                key={child.id}
+                onClick={() => setActiveChildId(child.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
+                  isSelected
+                    ? 'bg-blue-700 text-white shadow-xs'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                {lang === 'ar' ? child.nameAr : child.nameFr} ({child.code})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Linked Child Card */}
       <WeeklyProgressCard
-        childName={lang === 'ar' ? 'إلياس منصور' : 'Elyes Mansour'}
-        level={lang === 'ar' ? 'السنة التاسعة أساسي (مناظرة النوفيام)' : '9ème Année de Base (Concours Neufième)'}
-        totalStudyHours={4}
-        exercisesCompleted={18}
-        averageScorePercentage={88}
-        weakTopics={[
-          lang === 'ar' ? 'نشر وتفكيك الجداءات المعتبرة (2x - 3)²' : 'Développement des identités remarquables (2x - 3)²',
-          lang === 'ar' ? 'جيب تمام زاوية حادة في مثلث قائم (مبرهنة فيثاغورس)' : 'Cosinus dans un triangle rectangle (Théorème de Pythagore)',
-        ]}
+        childName={lang === 'ar' ? activeChild.nameAr : activeChild.nameFr}
+        level={lang === 'ar' ? activeChild.levelAr : activeChild.levelFr}
+        totalStudyHours={activeChild.totalStudyHours}
+        exercisesCompleted={activeChild.exercisesCompleted}
+        averageScorePercentage={activeChild.averageScorePercentage}
+        weakTopics={lang === 'ar' ? activeChild.weakTopicsAr : activeChild.weakTopicsFr}
       />
 
       {/* Parental Consent & Security Explainer */}
@@ -109,6 +254,81 @@ export default function ParentDashboardPage() {
           </p>
         </div>
       </div>
+
+      {/* Link Child Modal */}
+      {linkModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full border border-blue-100 shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+                  <Icons.Users className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">
+                  {lang === 'ar' ? 'ربط حساب تلميذ جديد' : 'Rattacher un Compte Enfant'}
+                </h3>
+              </div>
+              <button
+                onClick={() => setLinkModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700"
+              >
+                <Icons.X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              {lang === 'ar'
+                ? 'أدخل المعرف السري الخاص بطفلك (Child ID) المتاح على تطبيقه أو المسلم من الإدارة المدرسية لتفعيل المتابعة الأسبوعية المشتركة.'
+                : 'Saisissez le Child ID délivré sur l\'espace élève de votre enfant pour activer la supervision conjointe en conformité INPDP.'}
+            </p>
+
+            <form onSubmit={handleLinkChild} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700">
+                  {lang === 'ar' ? 'رمز التلميذ (Child ID) :' : 'Code Enfant (Child ID) :'}
+                </label>
+                <input
+                  type="text"
+                  value={inputChildCode}
+                  onChange={(e) => setInputChildCode(e.target.value)}
+                  placeholder="Ex: TUN-5520"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-mono text-sm text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600"
+                />
+              </div>
+
+              {linkError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800">
+                  {linkError}
+                </div>
+              )}
+
+              {linkSuccess && (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                  <Icons.CheckCircle className="w-4 h-4 text-emerald-600" />
+                  <span>{linkSuccess}</span>
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLinkModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs text-slate-600 hover:bg-slate-100"
+                >
+                  {lang === 'ar' ? 'إلغاء' : 'Annuler'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={!inputChildCode.trim()}
+                  className="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold shadow-xs disabled:opacity-40"
+                >
+                  {lang === 'ar' ? 'تأكيد الربط' : 'Valider la Liaison'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
