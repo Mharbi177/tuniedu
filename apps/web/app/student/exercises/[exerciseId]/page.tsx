@@ -40,6 +40,19 @@ export default function ExerciseDetailPage() {
     chapterTitle = store.books[0].chapters[0].title;
   }
 
+  let nextExerciseId: string | undefined;
+  for (const b of store.books) {
+    for (const ch of b.chapters) {
+      const idx = ch.exercises.findIndex((e) => e.id === exerciseId);
+      if (idx !== -1) {
+        if (idx + 1 < ch.exercises.length) {
+          nextExerciseId = ch.exercises[idx + 1].id;
+        }
+        break;
+      }
+    }
+  }
+
   const hasAccess = store.hasActiveEntitlement(store.currentUserId, targetBookId);
 
   const handleAttemptSubmitted = (answer: string, isCorrect: boolean) => {
@@ -107,7 +120,7 @@ export default function ExerciseDetailPage() {
         hasAccess={hasAccess}
         bookId={targetBookId}
         onAttemptSubmitted={handleAttemptSubmitted}
-        nextExerciseId="ex_2"
+        nextExerciseId={nextExerciseId}
       />
     </div>
   );

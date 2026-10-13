@@ -670,6 +670,21 @@ class TuniEduStore {
     this.attempts.push(attempt);
     return attempt;
   }
+
+  recordPayout(professorId: string, amountMillimes: number, reference?: string): FinancialLedgerEntry {
+    const entry: FinancialLedgerEntry = {
+      id: `led_payout_${Date.now()}`,
+      professorId,
+      type: 'PAYOUT',
+      amountMillimes,
+      currency: 'TND',
+      reference: reference || `BCT-VIR-${Date.now().toString().slice(-6)}`,
+      description: `Virement bancaire de redevances (${(amountMillimes / 1000).toFixed(3)} DT)`,
+      createdAt: new Date().toISOString(),
+    };
+    this.ledger.push(entry);
+    return entry;
+  }
 }
 
 // Global Singleton to preserve data across HMR in development

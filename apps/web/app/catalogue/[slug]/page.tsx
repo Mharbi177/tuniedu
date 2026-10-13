@@ -236,18 +236,28 @@ export default function BookDetailPage() {
                   </Link>
                 </div>
               ) : (
-                <button
-                  onClick={handleBuy}
-                  disabled={isProcessingCheckout}
-                  className="px-7 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs transition shadow-xs flex items-center gap-2 disabled:opacity-50"
-                >
-                  <Icons.CreditCard className="w-4 h-4" />
-                  <span>
-                    {isProcessingCheckout
-                      ? lang === 'ar' ? 'جارٍ معالجة الدفع...' : 'Traitement du paiement...'
-                      : lang === 'ar' ? 'اقتناء النفاذ السنوي' : 'Acquérir l\'Accès Annuel'}
-                  </span>
-                </button>
+                <div className="flex flex-col sm:flex-row items-center gap-2.5">
+                  <Link
+                    href={`/checkout/gateway-simulation?bookId=${book.id}&amount=${book.priceMillimes}&paymentId=pay_${book.id}_${Date.now()}`}
+                    className="px-4 py-3.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 font-semibold text-xs transition shadow-xs flex items-center gap-1.5"
+                  >
+                    <Icons.CreditCard className="w-3.5 h-3.5 text-blue-700" />
+                    <span>{lang === 'ar' ? 'بوابة الدفع الوطنية (Flouci)' : 'Passerelle Nationale (Flouci)'}</span>
+                  </Link>
+
+                  <button
+                    onClick={handleBuy}
+                    disabled={isProcessingCheckout}
+                    className="px-6 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs transition shadow-xs flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Icons.Check className="w-4 h-4" />
+                    <span>
+                      {isProcessingCheckout
+                        ? lang === 'ar' ? 'جارٍ المعالجة...' : 'Traitement...'
+                        : lang === 'ar' ? 'تفعيل فوري' : 'Activation Immédiate'}
+                    </span>
+                  </button>
+                </div>
               )}
             </div>
           </div>

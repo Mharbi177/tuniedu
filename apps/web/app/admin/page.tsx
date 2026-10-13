@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { store } from '@/lib/store';
 import { useLanguage } from '@/lib/language-context';
 import { AcademicYearEditor } from '@/components/admin/AcademicYearEditor';
+import { LedgerView } from '@/components/admin/LedgerView';
 import { Icons } from '@/components/ui/icons';
 import { runSecurityAcceptanceTests } from '@/lib/sec-tests';
 
@@ -95,6 +96,18 @@ export default function AdminDashboardPage() {
         >
           <Icons.Users className="w-4 h-4" />
           <span>{lang === 'ar' ? 'اعتماد ملفات الأساتذة الجدد' : 'File de Vérification Enseignants'}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('LEDGER')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${
+            activeTab === 'LEDGER'
+              ? 'bg-blue-700 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-blue-50/50'
+          }`}
+        >
+          <Icons.CreditCard className="w-4 h-4" />
+          <span>{lang === 'ar' ? 'دفتر العمليات والعمولات (10% / 90%)' : 'Grand Livre & Commissions (10% / 90%)'}</span>
         </button>
       </div>
 
@@ -204,6 +217,9 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Tab: Financial Ledger & Commissions */}
+      {activeTab === 'LEDGER' && <LedgerView />}
     </div>
   );
 }
